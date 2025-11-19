@@ -1,7 +1,7 @@
 // ------------------ คีย์คำตอบ ------------------
 const ANSWER_KEY = {
   "หินอัคนีแทรกซอน": ["หินแกรนิต", "หินแกบโบร"],
-  "หินอัคนีพุ": ["หินบะซอลต์", "หินพัมมิซ"],
+  "หินอัคนีพุ": ["หินบะซอลต์", "หินพัมมิซ"], // ใช้ชื่อ "หินพัมมิซ"
   "หินตะกอนผสม": ["หินทราย", "หินดินดาน"],
   "หินตะกอนประสาน": ["หินปูน"],
   "หินแปรสภาพแบบไพศาล": ["หินไนส์", "หินชีสต์"],
@@ -42,7 +42,10 @@ function resetGame(){
   document.getElementById("scoreLabel").textContent = "ถูกต้อง: 0/10";
   const rocks = document.querySelectorAll(".rock");
   const palette = document.getElementById("rocks");
-  rocks.forEach(r => palette.appendChild(r));
+  rocks.forEach(r => {
+    r.classList.remove("right","wrong");
+    palette.appendChild(r);
+  });
   startTimer();
 }
 
@@ -64,19 +67,28 @@ function setupDragAndDrop(){
 }
 
 function checkAnswers(){
-  let correctCount=0;
+  let correctCount = 0;
+
   document.querySelectorAll(".category").forEach(cat=>{
-    const name=cat.dataset.category;
-    const placed=[...cat.querySelectorAll(".rock")].map(r=>r.dataset.rock);
-    const correctSet=new Set(ANSWER_KEY[name]||[]);
-    const placedSet=new Set(placed);
-    const isCorrect=placed.length===correctSet.size && [...placedSet].every(x=>correctSet.has(x));
-    cat.classList.remove("correct","incorrect");
-    cat.classList.add(isCorrect?"correct":"incorrect");
-    if(isCorrect) correctCount+=placed.length;
+    const name = cat.dataset.category;
+    const placed = [...cat.querySelectorAll(".rock")];
+    const correctSet = new Set(ANSWER_KEY[name] || []);
+
+    placed.forEach(r=>{
+      if(correctSet.has(r.dataset.rock)){
+        r.classList.remove("wrong");
+        r.classList.add("right");
+        correctCount++; // นับคะแนนตามหินที่ถูก
+      } else {
+        r.classList.remove("right");
+        r.classList.add("wrong"); // ไฮไลท์หินผิด
+      }
+    });
   });
-  document.getElementById("scoreLabel").textContent=`ถูกต้อง: ${correctCount}/10`;
-  if(correctCount===10){
+
+  document.getElementById("scoreLabel").textContent = `ถูกต้อง: ${correctCount}/10`;
+
+  if(correctCount === 10){
     stopTimer();
     showWinPopup();
     saveScore();
