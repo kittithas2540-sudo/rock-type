@@ -6,7 +6,10 @@ body {
   font-size:13px;
 }
 
-header, footer { padding:8px; text-align:center; }
+header, footer { 
+  padding:8px; 
+  text-align:center; 
+}
 
 main {
   display:flex;
@@ -91,12 +94,36 @@ main {
 #resetBtn { background:#64748b; color:#fff; }
 #leaderboardBtn { background:#22c55e; color:#fff; }
 
-#timerLabel { font-weight:bold; color:#22c55e; font-size:12px; }
+#timerLabel { 
+  font-weight:bold; 
+  color:#22c55e; 
+  font-size:12px; 
+}
 
 /* Popup */
+.popup {
+  position:fixed; 
+  top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,0.6);
+  display:flex; 
+  align-items:center; 
+  justify-content:center;
+}
+
 .popup-content {
-  background:#fff; color:#000;
-  padding:10px; border-radius:6px;
-  text-align:center; width:90%; max-width:260px;
+  background:#fff; 
+  color:#000;
+  padding:10px; 
+  border-radius:6px;
+  text-align:center; 
+  width:90%; 
+  max-width:260px;
   font-size:13px;
+}
+
+/* Responsive มือถือ */
+@media (max-width:600px){
+  .rock-list { grid-template-columns: repeat(2, 1fr); }
+  .category h4 { font-size:11px; }
+  .controls { flex-wrap:wrap; }
 }
