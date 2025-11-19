@@ -1,7 +1,7 @@
 // ------------------ คีย์คำตอบ ------------------
 const ANSWER_KEY = {
   "หินอัคนีแทรกซอน": ["หินแกรนิต", "หินแกบโบร"],
-  "หินอัคนีพุ": ["หินบะซอลต์", "หินพัมมิซ"], // ใช้ชื่อ "หินพัมมิซ"
+  "หินอัคนีพุ": ["หินบะซอลต์", "หินพัมมิซ"],
   "หินตะกอนผสม": ["หินทราย", "หินดินดาน"],
   "หินตะกอนประสาน": ["หินปูน"],
   "หินแปรสภาพแบบไพศาล": ["หินไนส์", "หินชีสต์"],
@@ -10,18 +10,18 @@ const ANSWER_KEY = {
 
 let dragged = null;
 let timerInterval = null;
-let secondsElapsed = 0;
+let centisecondsElapsed = 0; // หน่วยเป็น 1/100 วินาที
 let playerName = "";
 
 // ------------------ Timer ------------------
 function startTimer(){
   stopTimer();
-  secondsElapsed = 0;
+  centisecondsElapsed = 0;
   updateTimerLabel();
   timerInterval = setInterval(() => {
-    secondsElapsed++;
+    centisecondsElapsed++;
     updateTimerLabel();
-  }, 1000);
+  }, 10); // อัปเดตทุก 10ms
 }
 
 function stopTimer(){
@@ -32,9 +32,11 @@ function stopTimer(){
 }
 
 function updateTimerLabel(){
-  const m = String(Math.floor(secondsElapsed/60)).padStart(2,"0");
-  const s = String(secondsElapsed%60).padStart(2,"0");
-  document.getElementById("timerLabel").textContent = `เวลา: ${m}:${s}`;
+  const totalSeconds = Math.floor(centisecondsElapsed / 100);
+  const minutes = String(Math.floor(totalSeconds / 60)).padStart(2,"0");
+  const seconds = String(totalSeconds % 60).padStart(2,"0");
+  const centis = String(centisecondsElapsed % 100).padStart(2,"0");
+  document.getElementById("timerLabel").textContent = `เวลา: ${minutes}.${seconds}.${centis}`;
 }
 
 // ------------------ Game ------------------
@@ -97,9 +99,11 @@ function checkAnswers(){
 
 // ------------------ Popup ------------------
 function showWinPopup(){
-  const m = String(Math.floor(secondsElapsed/60)).padStart(2,"0");
-  const s = String(secondsElapsed%60).padStart(2,"0");
-  document.getElementById("winMessage").textContent=`คุณใช้เวลา ${m}:${s}`;
+  const totalSeconds = Math.floor(centisecondsElapsed / 100);
+  const minutes = String(Math.floor(totalSeconds / 60)).padStart(2,"0");
+  const seconds = String(totalSeconds % 60).padStart(2,"0");
+  const centis = String(centisecondsElapsed % 100).padStart(2,"0");
+  document.getElementById("winMessage").textContent=`คุณใช้เวลา ${minutes}.${seconds}.${centis}`;
   document.getElementById("winPopup").style.display="flex";
 }
 function closePopup(){ document.getElementById("winPopup").style.display="none"; }
@@ -107,7 +111,7 @@ function closePopup(){ document.getElementById("winPopup").style.display="none";
 // ------------------ Leaderboard ------------------
 function saveScore(){
   const scores=JSON.parse(localStorage.getItem("rockScores")||"[]");
-  scores.push({name:playerName,time:secondsElapsed});
+  scores.push({name:playerName,time:centisecondsElapsed});
   scores.sort((a,b)=>a.time-b.time);
   localStorage.setItem("rockScores",JSON.stringify(scores));
 }
@@ -117,10 +121,12 @@ function showLeaderboard(){
   const list=document.getElementById("leaderboardList");
   list.innerHTML="";
   scores.forEach(s=>{
-    const m=String(Math.floor(s.time/60)).padStart(2,"0");
-    const sec=String(s.time%60).padStart(2,"0");
+    const totalSeconds = Math.floor(s.time / 100);
+    const minutes = String(Math.floor(totalSeconds / 60)).padStart(2,"0");
+    const seconds = String(totalSeconds % 60).padStart(2,"0");
+    const centis = String(s.time % 100).padStart(2,"0");
     const li=document.createElement("li");
-    li.textContent=`${s.name} - ${m}:${sec}`;
+    li.textContent=`${s.name} - ${minutes}.${seconds}.${centis}`;
     list.appendChild(li);
   });
   document.getElementById("leaderboard").style.display="flex";
@@ -140,4 +146,5 @@ document.addEventListener("DOMContentLoaded",()=>{
   document.getElementById("checkBtn").addEventListener("click",checkAnswers);
   document.getElementById("resetBtn").addEventListener("click",resetGame);
   document.getElementById("leaderboardBtn").addEventListener("click",showLeaderboard);
+  document.getElementById("leaderboardBtnHome").addEventListener("click",showLeaderboard); // ปุ่มหน้าแรก
 });
