@@ -46,8 +46,8 @@ main {
 
 /* หมวดหมู่ */
 .categories {
-  display:flex;
-  flex-direction: column;
+  display:grid;
+  grid-template-columns: repeat(2, 1fr); /* แบ่งเป็น 2 คอลัมน์ */
   gap:6px;
 }
 
@@ -121,8 +121,9 @@ main {
   font-size:13px;
 }
 
-/* Responsive มือถือ */
-@media (max-width:600px){
+/* Responsive มือถือเล็กมาก */
+@media (max-width:400px){
+  .categories { grid-template-columns: 1fr; } /* มือถือเล็ก → 1 คอลัมน์ */
   .rock-list { grid-template-columns: repeat(2, 1fr); }
   .category h4 { font-size:11px; }
   .controls { flex-wrap:wrap; }
