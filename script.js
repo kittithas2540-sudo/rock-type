@@ -13,9 +13,6 @@ let timerInterval = null;
 let centisecondsElapsed = 0; // หน่วยเป็น 1/100 วินาที
 let playerName = "";
 
-// ------------------ Google Script URL ------------------
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw1d1nkD4t6Z91rGaZ6sWf52EwMRPUmLn7831M6p5c0V45AAMgG_XpteL_RDr_UQRYW/exec";
-
 // ------------------ Timer ------------------
 function startTimer(){
   stopTimer();
@@ -24,7 +21,7 @@ function startTimer(){
   timerInterval = setInterval(() => {
     centisecondsElapsed++;
     updateTimerLabel();
-  }, 10);
+  }, 10); // อัปเดตทุก 10ms
 }
 
 function stopTimer(){
@@ -40,14 +37,6 @@ function updateTimerLabel(){
   const seconds = String(totalSeconds % 60).padStart(2,"0");
   const centis = String(centisecondsElapsed % 100).padStart(2,"0");
   document.getElementById("timerLabel").textContent = `เวลา: ${minutes}.${seconds}.${centis}`;
-}
-
-function formatTime(cs){
-  const totalSeconds = Math.floor(cs / 100);
-  const minutes = String(Math.floor(totalSeconds / 60)).padStart(2,"0");
-  const seconds = String(totalSeconds % 60).padStart(2,"0");
-  const centis = String(cs % 100).padStart(2,"0");
-  return `${minutes}.${seconds}.${centis}`;
 }
 
 // ------------------ Game ------------------
@@ -91,10 +80,10 @@ function checkAnswers(){
       if(correctSet.has(r.dataset.rock)){
         r.classList.remove("wrong");
         r.classList.add("right");
-        correctCount++;
+        correctCount++; // นับคะแนนตามหินที่ถูก
       } else {
         r.classList.remove("right");
-        r.classList.add("wrong");
+        r.classList.add("wrong"); // ไฮไลท์หินผิด
       }
     });
   });
@@ -104,57 +93,58 @@ function checkAnswers(){
   if(correctCount === 10){
     stopTimer();
     showWinPopup();
-    // ส่งข้อมูลไป Google Sheet ครบ name, score, time
-    saveScoreToGoogleSheet(playerName, correctCount, formatTime(centisecondsElapsed));
+    saveScore();
   }
-}
-
-// ------------------ Google Sheet Integration ------------------
-function saveScoreToGoogleSheet(name, score, time){
-  fetch(GOOGLE_SCRIPT_URL, {
-    method: "POST",
-    body: JSON.stringify({ name, score, time }),
-    headers: { "Content-Type": "application/json" }
-  })
-  .then(res => res.text())
-  .then(txt => console.log("Saved to Google Sheet:", txt))
-  .catch(err => console.error("Error:", err));
-}
-
-function showLeaderboard(){
-  fetch(GOOGLE_SCRIPT_URL)
-    .then(res => res.json())
-    .then(scores => {
-      // ฟังก์ชันแปลงเวลาเป็นเซนติวินาที
-      const toCentis = (t) => {
-        const parts = String(t).split(".");
-        const mm = parseInt(parts[0] || "0", 10);
-        const ss = parseInt(parts[1] || "0", 10);
-        const cc = parseInt(parts[2] || "0", 10);
-        return mm*60*100 + ss*100 + cc;
-      };
-
-      // เรียงลำดับจากเวลาน้อยไปมาก (เร็วสุดอยู่บน)
-      scores.sort((a,b)=> toCentis(a.playtime) - toCentis(b.playtime));
-
-      const list=document.getElementById("leaderboardList");
-      list.innerHTML="";
-      scores.forEach((s, index)=>{
-        const li=document.createElement("li");
-        li.textContent=`#${index+1} ${s.name} - คะแนน ${s.score} - เวลา ${s.playtime}`;
-        list.appendChild(li);
-      });
-      document.getElementById("leaderboard").style.display="flex";
-    })
-    .catch(err => console.error("Error loading leaderboard:", err));
 }
 
 // ------------------ Popup ------------------
 function showWinPopup(){
-  document.getElementById("winMessage").textContent=`คุณใช้เวลา ${formatTime(centisecondsElapsed)}`;
+  const totalSeconds = Math.floor(centisecondsElapsed / 100);
+  const minutes = String(Math.floor(totalSeconds / 60)).padStart(2,"0");
+  const seconds = String(totalSeconds % 60).padStart(2,"0");
+  const centis = String(centisecondsElapsed % 100).padStart(2,"0");
+  document.getElementById("winMessage").textContent=`คุณใช้เวลา ${minutes}.${seconds}.${centis}`;
   document.getElementById("winPopup").style.display="flex";
 }
 function closePopup(){ document.getElementById("winPopup").style.display="none"; }
+
+// ------------------ Leaderboard (Google Sheets) ------------------
+const API_URL = "https://script.google.com/macros/s/AKfycbwwhtEGmPMt7OJ8j65zbeCzTXpZ-SXLQanDn0G76L6CfL8-SOancmQFwODBVKRY0l7oaA/exec"; // ใส่ URL จาก Apps Script
+
+function saveScore(){
+  const payload = {
+    name: playerName,
+    score: 10, // เกมนี้มีหินทั้งหมด 10 ก้อน
+    time: centisecondsElapsed
+  };
+
+  fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }).then(res => console.log("Score saved"));
+}
+
+async function showLeaderboard(){
+  const res = await fetch(API_URL);
+  const scores = await res.json();
+
+  // เรียงตามเวลา (น้อยที่สุดก่อน)
+  scores.sort((a,b)=>a.time-b.time);
+
+  const list=document.getElementById("leaderboardList");
+  list.innerHTML="";
+  scores.forEach(s=>{
+    const totalSeconds = Math.floor(s.time / 100);
+    const minutes = String(Math.floor(totalSeconds / 60)).padStart(2,"0");
+    const seconds = String(totalSeconds % 60).padStart(2,"0");
+    const centis = String(s.time % 100).padStart(2,"0");
+    const li=document.createElement("li");
+    li.textContent=`${s.name} - ${minutes}.${seconds}.${centis}`;
+    list.appendChild(li);
+  });
+
+  document.getElementById("leaderboard").style.display="flex";
+}
 function closeLeaderboard(){ document.getElementById("leaderboard").style.display="none"; }
 
 // ------------------ Start ------------------
@@ -170,5 +160,5 @@ document.addEventListener("DOMContentLoaded",()=>{
   document.getElementById("checkBtn").addEventListener("click",checkAnswers);
   document.getElementById("resetBtn").addEventListener("click",resetGame);
   document.getElementById("leaderboardBtn").addEventListener("click",showLeaderboard);
-  document.getElementById("leaderboardBtnHome").addEventListener("click",showLeaderboard);
+  document.getElementById("leaderboardBtnHome").addEventListener("click",showLeaderboard); // ปุ่มหน้าแรก
 });
