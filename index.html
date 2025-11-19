@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>เกมจับคู่ประเภทของหิน</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <header>
+    <h2>เกมจับคู่ประเภทของหิน</h2>
+    <div id="playerInput">
+      <label>ชื่อผู้เล่น: </label>
+      <input type="text" id="playerName" placeholder="กรอกชื่อ">
+      <button id="startBtn">เริ่ม</button>
+    </div>
+  </header>
+
+  <main id="gameArea" style="display:none;">
+    <!-- ตัวเลือกหิน -->
+    <section class="palette">
+      <h3>ตัวเลือกหิน</h3>
+      <div id="rocks" class="rock-list">
+        <div class="rock" draggable="true" data-rock="หินบะซอลต์">
+          <img src="images/basalt.jpg" alt="หินบะซอลต์" class="rock-img">
+          <span>หินบะซอลต์</span>
+        </div>
+        <div class="rock" draggable="true" data-rock="หินพัมมิซ">
+          <img src="images/pumice.jpg" alt="หินพัมมิซ" class="rock-img">
+          <span>หินพัมมิซ</span>
+        </div>
+        <div class="rock" draggable="true" data-rock="หินแกรนิต">
+          <img src="images/granite.jpg" alt="หินแกรนิต" class="rock-img">
+          <span>หินแกรนิต</span>
+        </div>
+        <div class="rock" draggable="true" data-rock="หินแกบโบร">
+          <img src="images/gabbro.jpg" alt="หินแกบโบร" class="rock-img">
+          <span>หินแกบโบร</span>
+        </div>
+        <div class="rock" draggable="true" data-rock="หินทราย">
+          <img src="images/sandstone.jpg" alt="หินทราย" class="rock-img">
+          <span>หินทราย</span>
+        </div>
+        <div class="rock" draggable="true" data-rock="หินปูน">
+          <img src="images/limestone.jpg" alt="หินปูน" class="rock-img">
+          <span>หินปูน</span>
+        </div>
+        <div class="rock" draggable="true" data-rock="หินดินดาน">
+          <img src="images/shale.jpg" alt="หินดินดาน" class="rock-img">
+          <span>หินดินดาน</span>
+        </div>
+        <div class="rock" draggable="true" data-rock="หินอ่อน">
+          <img src="images/marble.jpg" alt="หินอ่อน" class="rock-img">
+          <span>หินอ่อน</span>
+        </div>
+        <div class="rock" draggable="true" data-rock="หินไนส์">
+          <img src="images/gneiss.jpg" alt="หินไนส์" class="rock-img">
+          <span>หินไนส์</span>
+        </div>
+        <div class="rock" draggable="true" data-rock="หินชีสต์">
+          <img src="images/schist.jpg" alt="หินชีสต์" class="rock-img">
+          <span>หินชีสต์</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- หมวดหมู่ -->
+    <section class="board">
+      <h3>ประเภทของหิน</h3>
+      <div class="categories">
+        <div class="category" data-category="หินอัคนีแทรกซอน">
+          <h4>หินอัคนีแทรกซอน</h4>
+          <div class="dropzone"></div>
+        </div>
+        <div class="category" data-category="หินอัคนีพุ">
+          <h4>หินอัคนีพุ</h4>
+          <div class="dropzone"></div>
+        </div>
+        <div class="category" data-category="หินตะกอนผสม">
+          <h4>หินตะกอนผสม</h4>
+          <div class="dropzone"></div>
+        </div>
+        <div class="category" data-category="หินตะกอนประสาน">
+          <h4>หินตะกอนประสาน</h4>
+          <div class="dropzone"></div>
+        </div>
+        <div class="category" data-category="หินแปรสภาพแบบไพศาล">
+          <h4>หินแปรสภาพแบบไพศาล</h4>
+          <div class="dropzone"></div>
+        </div>
+        <div class="category" data-category="หินแปรสภาพแบบสัมผัส">
+          <h4>หินแปรสภาพแบบสัมผัส</h4>
+          <div class="dropzone"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ปุ่มควบคุม -->
+    <footer id="controls">
+      <button id="checkBtn">ตรวจสอบ</button>
+      <button id="resetBtn">เริ่มใหม่</button>
+      <button id="leaderboardBtn">Leaderboard</button>
+      <span id="scoreLabel">ถูกต้อง: 0/10</span>
+      <span id="timerLabel">เวลา: 00:00</span>
+    </footer>
+  </main>
+
+  <!-- Popup ชนะ -->
+  <div id="winPopup" class="popup" style="display:none;">
+    <div class="popup-content">
+      <h2>🎉 คุณชนะแล้ว!</h2>
+      <p id="winMessage"></p>
+      <button onclick="closePopup()">ปิด</button>
+    </div>
+  </div>
+
+  <!-- Leaderboard -->
+  <div id="leaderboard" class="popup" style="display:none;">
+    <div class="popup-content">
+      <h2>🏆 Leaderboard</h2>
+      <ul id="leaderboardList"></ul>
+      <button onclick="closeLeaderboard()">ปิด</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

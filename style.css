@@ -1,0 +1,116 @@
+body {
+  margin:0;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background: #0f172a;
+  color:#e5e7eb;
+}
+
+header, footer {
+  padding:10px;
+  text-align:center;
+}
+
+main {
+  display:flex;
+  flex-direction: column;
+  gap:10px;
+  padding:10px;
+}
+
+/* ตัวเลือกหิน */
+.rock-list {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:center;
+}
+
+.rock {
+  display:flex;
+  align-items:center;
+  gap:4px;
+  background:#1f2937;
+  border:1px solid #334155;
+  padding:4px 6px;
+  border-radius:6px;
+  cursor:grab;
+  font-size:14px;
+}
+
+.rock-img {
+  width:40px;
+  height:40px;
+  object-fit:cover;
+  border-radius:4px;
+}
+
+/* หมวดหมู่ */
+.categories {
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap:8px;
+}
+
+.category {
+  background:#0b1320;
+  border:1px solid #1f2937;
+  border-radius:8px;
+  padding:6px;
+}
+
+.category h3 {
+  font-size:14px;
+  margin:0 0 4px;
+}
+
+.dropzone {
+  min-height:50px;
+  background:#0d1b2a;
+  border:1px dashed #334155;
+  border-radius:6px;
+  padding:4px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+}
+
+/* ปุ่มควบคุม */
+.controls {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:6px;
+  margin-top:8px;
+}
+
+.controls button {
+  padding:6px 10px;
+  font-size:14px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+#checkBtn { background:#0ea5e9; color:#fff; }
+#resetBtn { background:#64748b; color:#fff; }
+#leaderboardBtn { background:#22c55e; color:#fff; }
+
+#timerLabel { font-weight:bold; color:#22c55e; }
+
+/* Popup */
+.popup {
+  position:fixed; top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,0.6);
+  display:flex; align-items:center; justify-content:center;
+}
+.popup-content {
+  background:#fff; color:#000;
+  padding:12px; border-radius:8px;
+  text-align:center; width:90%; max-width:300px;
+}
+
+/* Responsive มือถือ */
+@media (max-width:600px){
+  .categories { grid-template-columns: 1fr; }
+  .rock-list { justify-content:flex-start; }
+}
