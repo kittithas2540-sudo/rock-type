@@ -1,28 +1,25 @@
 body {
   margin:0;
   font-family: "Segoe UI", Tahoma, sans-serif;
-  background: #0f172a;
+  background:#0f172a;
   color:#e5e7eb;
+  font-size:13px;
 }
 
-header, footer {
-  padding:10px;
-  text-align:center;
-}
+header, footer { padding:8px; text-align:center; }
 
 main {
   display:flex;
   flex-direction: column;
-  gap:10px;
-  padding:10px;
+  gap:6px;
+  padding:6px;
 }
 
 /* ตัวเลือกหิน */
 .rock-list {
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  justify-content:center;
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:6px;
 }
 
 .rock {
@@ -31,63 +28,62 @@ main {
   gap:4px;
   background:#1f2937;
   border:1px solid #334155;
-  padding:4px 6px;
-  border-radius:6px;
+  padding:2px 4px;
+  border-radius:4px;
   cursor:grab;
-  font-size:14px;
+  font-size:12px;
 }
 
 .rock-img {
-  width:40px;
-  height:40px;
+  width:32px;
+  height:32px;
   object-fit:cover;
   border-radius:4px;
 }
 
 /* หมวดหมู่ */
 .categories {
-  display:grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap:8px;
+  display:flex;
+  flex-direction: column;
+  gap:6px;
 }
 
 .category {
   background:#0b1320;
   border:1px solid #1f2937;
-  border-radius:8px;
-  padding:6px;
+  border-radius:6px;
+  padding:4px;
 }
 
-.category h3 {
-  font-size:14px;
-  margin:0 0 4px;
+.category h4 {
+  font-size:12px;
+  margin:0 0 2px;
 }
 
 .dropzone {
-  min-height:50px;
+  min-height:40px;
   background:#0d1b2a;
   border:1px dashed #334155;
-  border-radius:6px;
-  padding:4px;
+  border-radius:4px;
+  padding:2px;
   display:flex;
   flex-wrap:wrap;
-  gap:4px;
+  gap:2px;
 }
 
 /* ปุ่มควบคุม */
 .controls {
   display:flex;
-  flex-wrap:wrap;
   justify-content:center;
-  gap:6px;
-  margin-top:8px;
+  gap:4px;
+  margin-top:4px;
 }
 
 .controls button {
-  padding:6px 10px;
-  font-size:14px;
+  padding:6px 8px;
+  font-size:12px;
   border:none;
-  border-radius:6px;
+  border-radius:4px;
   cursor:pointer;
 }
 
@@ -95,22 +91,12 @@ main {
 #resetBtn { background:#64748b; color:#fff; }
 #leaderboardBtn { background:#22c55e; color:#fff; }
 
-#timerLabel { font-weight:bold; color:#22c55e; }
+#timerLabel { font-weight:bold; color:#22c55e; font-size:12px; }
 
 /* Popup */
-.popup {
-  position:fixed; top:0; left:0; right:0; bottom:0;
-  background:rgba(0,0,0,0.6);
-  display:flex; align-items:center; justify-content:center;
-}
 .popup-content {
   background:#fff; color:#000;
-  padding:12px; border-radius:8px;
-  text-align:center; width:90%; max-width:300px;
-}
-
-/* Responsive มือถือ */
-@media (max-width:600px){
-  .categories { grid-template-columns: 1fr; }
-  .rock-list { justify-content:flex-start; }
+  padding:10px; border-radius:6px;
+  text-align:center; width:90%; max-width:260px;
+  font-size:13px;
 }
