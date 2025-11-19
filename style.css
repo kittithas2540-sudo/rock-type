@@ -35,6 +35,7 @@ main {
   border-radius:4px;
   cursor:grab;
   font-size:12px;
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .rock-img {
@@ -42,6 +43,17 @@ main {
   height:32px;
   object-fit:cover;
   border-radius:4px;
+}
+
+/* ไฮไลท์ผลตรวจสอบ */
+.rock.right {
+  background:#14532d; /* เขียวเข้ม */
+  border-color:#22c55e;
+}
+
+.rock.wrong {
+  background:#7f1d1d; /* แดงเข้ม */
+  border-color:#ef4444;
 }
 
 /* หมวดหมู่ */
