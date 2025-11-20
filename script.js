@@ -10,7 +10,7 @@ const ANSWER_KEY = {
 
 let dragged = null;
 let timerInterval = null;
-let centisecondsElapsed = 0; // หน่วยเป็น 1/100 วินาที
+let centisecondsElapsed = 0;
 let playerName = "";
 
 // ------------------ Timer ------------------
@@ -21,7 +21,7 @@ function startTimer(){
   timerInterval = setInterval(() => {
     centisecondsElapsed++;
     updateTimerLabel();
-  }, 10); // อัปเดตทุก 10ms
+  }, 10);
 }
 
 function stopTimer(){
@@ -47,10 +47,13 @@ function resetGame(){
   rocks.forEach(r => {
     r.classList.remove("right","wrong");
     palette.appendChild(r);
+    r.style.position="static";
+    r.style.zIndex="";
   });
   startTimer();
 }
 
+// ------------------ Drag & Drop (PC + Mobile) ------------------
 function setupDragAndDrop(){
   document.querySelectorAll(".rock").forEach(el=>{
     el.addEventListener("dragstart", e=>{
@@ -58,16 +61,86 @@ function setupDragAndDrop(){
       e.dataTransfer.setData("text/plain", el.dataset.rock);
     });
     el.addEventListener("dragend", ()=>{ dragged=null; });
+
+    // Touch Drag สำหรับมือถือ
+    setupTouchDrag(el);
   });
+
   document.querySelectorAll(".dropzone").forEach(zone=>{
-    zone.addEventListener("dragover", e=>e.preventDefault());
+    zone.addEventListener("dragover", e=>{
+      e.preventDefault();
+      zone.classList.add("dragover");
+    });
+    zone.addEventListener("dragleave", ()=>{
+      zone.classList.remove("dragover");
+    });
     zone.addEventListener("drop", e=>{
       e.preventDefault();
-      if(dragged) zone.appendChild(dragged);
+      zone.classList.remove("dragover");
+      if(dragged) {
+        zone.appendChild(dragged);
+        dragged.style.position="static";
+        dragged.style.zIndex="";
+      }
     });
   });
 }
 
+// ------------------ Touch Drag (Mobile) ------------------
+function setupTouchDrag(el){
+  let offsetX, offsetY;
+
+  el.addEventListener("touchstart", e=>{
+    const touch = e.touches[0];
+    offsetX = touch.clientX - el.getBoundingClientRect().left;
+    offsetY = touch.clientY - el.getBoundingClientRect().top;
+    el.style.position = "absolute";
+    el.style.zIndex = 1000;
+  });
+
+  el.addEventListener("touchmove", e=>{
+    const touch = e.touches[0];
+    el.style.left = (touch.clientX - offsetX) + "px";
+    el.style.top  = (touch.clientY - offsetY) + "px";
+
+    // highlight dropzone ที่อยู่ใกล้
+    document.querySelectorAll(".dropzone").forEach(zone=>{
+      const rect = zone.getBoundingClientRect();
+      if(touch.clientX > rect.left && touch.clientX < rect.right &&
+         touch.clientY > rect.top  && touch.clientY < rect.bottom){
+        zone.classList.add("dragover");
+      } else {
+        zone.classList.remove("dragover");
+      }
+    });
+  });
+
+  el.addEventListener("touchend", e=>{
+    const touch = e.changedTouches[0];
+    const dropzones = document.querySelectorAll(".dropzone");
+    let dropped = false;
+
+    dropzones.forEach(zone=>{
+      const rect = zone.getBoundingClientRect();
+      zone.classList.remove("dragover");
+      if(touch.clientX > rect.left && touch.clientX < rect.right &&
+         touch.clientY > rect.top  && touch.clientY < rect.bottom){
+        zone.appendChild(el);
+        el.style.position="static";
+        el.style.zIndex="";
+        dropped = true;
+      }
+    });
+
+    if(!dropped){
+      document.getElementById("rocks").appendChild(el);
+      el.style.position="static";
+      el.style.zIndex="";
+    }
+  });
+}
+
+// ------------------ ตรวจคำตอบ ------------------
 function checkAnswers(){
   let correctCount = 0;
 
@@ -80,10 +153,10 @@ function checkAnswers(){
       if(correctSet.has(r.dataset.rock)){
         r.classList.remove("wrong");
         r.classList.add("right");
-        correctCount++; // นับคะแนนตามหินที่ถูก
+        correctCount++;
       } else {
         r.classList.remove("right");
-        r.classList.add("wrong"); // ไฮไลท์หินผิด
+        r.classList.add("wrong");
       }
     });
   });
@@ -114,7 +187,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbwwhtEGmPMt7OJ8j65zbeCz
 function saveScore(){
   const payload = {
     name: playerName,
-    score: 10, // เกมนี้มีหินทั้งหมด 10 ก้อน
+    score: 10,
     time: centisecondsElapsed
   };
 
@@ -128,18 +201,19 @@ async function showLeaderboard(){
   const res = await fetch(API_URL);
   const scores = await res.json();
 
-  // เรียงตามเวลา (น้อยที่สุดก่อน)
   scores.sort((a,b)=>a.time-b.time);
 
   const list=document.getElementById("leaderboardList");
   list.innerHTML="";
-  scores.forEach(s=>{
+  scores.forEach((s, index)=>{
     const totalSeconds = Math.floor(s.time / 100);
     const minutes = String(Math.floor(totalSeconds / 60)).padStart(2,"0");
     const seconds = String(totalSeconds % 60).padStart(2,"0");
     const centis = String(s.time % 100).padStart(2,"0");
+
+    const medal = index===0 ? "🥇" : index===1 ? "🥈" : index===2 ? "🥉" : `${index+1}.`;
     const li=document.createElement("li");
-    li.textContent=`${s.name} - ${minutes}.${seconds}.${centis}`;
+    li.textContent=`${medal} ${s.name} - ${minutes}.${seconds}.${centis}`;
     list.appendChild(li);
   });
 
@@ -160,5 +234,5 @@ document.addEventListener("DOMContentLoaded",()=>{
   document.getElementById("checkBtn").addEventListener("click",checkAnswers);
   document.getElementById("resetBtn").addEventListener("click",resetGame);
   document.getElementById("leaderboardBtn").addEventListener("click",showLeaderboard);
-  document.getElementById("leaderboardBtnHome").addEventListener("click",showLeaderboard); // ปุ่มหน้าแรก
+  document.getElementById("leaderboardBtnHome").addEventListener("click",showLeaderboard);
 });
