@@ -186,7 +186,7 @@ function showWinPopup(){
 function closePopup(){ document.getElementById("winPopup").style.display="none"; }
 
 // ------------------ Leaderboard (Google Sheets) ------------------
-const API_URL = "https://script.google.com/macros/s/AKfycbwwhtEGmPMt7OJ8j65zbeCzTXpZ-SXLQanDn0G76L6CfL8-SOancmQFwODBVKRY0l7oaA/exec"; // ใส่ URL จาก Apps Script
+const API_URL = "YOUR_SCRIPT_URL_HERE"; // ใส่ URL จาก Apps Script
 
 function saveScore(){
   const payload = {
@@ -237,8 +237,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       setupDragAndDrop();
       resetGame();
     });
+  }
+
   document.getElementById("checkBtn").addEventListener("click",checkAnswers);
-  document.getElementById("resetBtn").addEventListener("click",resetGame);
-  document.getElementById("leaderboardBtn").addEventListener("click",showLeaderboard);
-  document.getElementById("leaderboardBtnHome").addEventListener("click",showLeaderboard);
-});
+  document.getElement
