@@ -227,13 +227,18 @@ function closeLeaderboard(){ document.getElementById("leaderboard").style.displa
 
 // ------------------ Start ------------------
 document.addEventListener("DOMContentLoaded",()=>{
-  document.getElementById("startBtn").addEventListener("click",()=>{
-    playerName=document.getElementById("playerName").value.trim()||"ผู้เล่น";
-    document.getElementById("playerInput").style.display="none";
-    document.getElementById("gameArea").style.display="block";
-    document.getElementById("controls").style.display="flex";
-    setupDragAndDrop();
-    resetGame();
-  });
+  const startBtn = document.getElementById("startBtn");
+  if(startBtn){
+    startBtn.addEventListener("click",()=>{
+      playerName=document.getElementById("playerName").value.trim()||"ผู้เล่น";
+      document.getElementById("playerInput").style.display="none";
+      document.getElementById("gameArea").style.display="block";
+      document.getElementById("controls").style.display="flex";
+      setupDragAndDrop();
+      resetGame();
+    });
   document.getElementById("checkBtn").addEventListener("click",checkAnswers);
-  document
+  document.getElementById("resetBtn").addEventListener("click",resetGame);
+  document.getElementById("leaderboardBtn").addEventListener("click",showLeaderboard);
+  document.getElementById("leaderboardBtnHome").addEventListener("click",showLeaderboard);
+});
