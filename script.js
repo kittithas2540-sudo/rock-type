@@ -238,4 +238,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   document.getElementById("checkBtn").addEventListener("click",checkAnswers);
   document.getElementById("resetBtn").addEventListener("click",resetGame);
   document.getElementById("leaderboardBtn").addEventListener("click",showLeaderboard);
-  document.getElementById("leaderboard
+   document.getElementById("leaderboardBtnHome").addEventListener("click",showLeaderboard);
+});
+
+
