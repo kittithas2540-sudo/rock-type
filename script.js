@@ -6,7 +6,11 @@ const ANSWER_KEY = {
   "หินตะกอนประสาน": ["หินปูน"],
   "หินแปรสภาพแบบไพศาล": ["หินไนส์", "หินชีสต์"],
   "หินแปรสภาพแบบสัมผัส": ["หินอ่อน"]
+  // 👉 ถ้ามี dropzone ใหม่ ให้เพิ่มตรงนี้
 };
+
+// ------------------ จำนวนหินทั้งหมด ------------------
+const TOTAL_ROCKS = Object.values(ANSWER_KEY).reduce((sum, arr)=> sum + arr.length, 0);
 
 let dragged = null;
 let timerInterval = null;
@@ -41,7 +45,7 @@ function updateTimerLabel(){
 
 // ------------------ Game ------------------
 function resetGame(){
-  document.getElementById("scoreLabel").textContent = "ถูกต้อง: 0/10";
+  document.getElementById("scoreLabel").textContent = `ถูกต้อง: 0/${TOTAL_ROCKS}`;
   const rocks = document.querySelectorAll(".rock");
   const palette = document.getElementById("rocks");
   rocks.forEach(r => {
@@ -161,9 +165,9 @@ function checkAnswers(){
     });
   });
 
-  document.getElementById("scoreLabel").textContent = `ถูกต้อง: ${correctCount}/10`;
+  document.getElementById("scoreLabel").textContent = `ถูกต้อง: ${correctCount}/${TOTAL_ROCKS}`;
 
-  if(correctCount === 10){
+  if(correctCount === TOTAL_ROCKS){
     stopTimer();
     showWinPopup();
     saveScore();
@@ -187,7 +191,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbwwhtEGmPMt7OJ8j65zbeCz
 function saveScore(){
   const payload = {
     name: playerName,
-    score: 10,
+    score: TOTAL_ROCKS,
     time: centisecondsElapsed
   };
 
@@ -234,6 +238,4 @@ document.addEventListener("DOMContentLoaded",()=>{
   document.getElementById("checkBtn").addEventListener("click",checkAnswers);
   document.getElementById("resetBtn").addEventListener("click",resetGame);
   document.getElementById("leaderboardBtn").addEventListener("click",showLeaderboard);
-  document.getElementById("leaderboardBtnHome").addEventListener("click",showLeaderboard);
-});
-
+  document.getElementById("leaderboard
