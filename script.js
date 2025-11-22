@@ -237,8 +237,8 @@ document.addEventListener("DOMContentLoaded",()=>{
       setupDragAndDrop();
       resetGame();
     });
-  }
-
   document.getElementById("checkBtn").addEventListener("click",checkAnswers);
-  document.getElement
-
+  document.getElementById("resetBtn").addEventListener("click",resetGame);
+  document.getElementById("leaderboardBtn").addEventListener("click",showLeaderboard);
+  document.getElementById("leaderboardBtnHome").addEventListener("click",showLeaderboard);
+});
