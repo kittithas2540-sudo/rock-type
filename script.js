@@ -6,7 +6,6 @@ const ANSWER_KEY = {
   "หินตะกอนประสาน": ["หินปูน"],
   "หินแปรสภาพแบบไพศาล": ["หินไนส์", "หินชีสต์"],
   "หินแปรสภาพแบบสัมผัส": ["หินอ่อน"]
-  // 👉 ถ้ามี dropzone ใหม่ ให้เพิ่มตรงนี้
 };
 
 // ------------------ จำนวนหินทั้งหมด ------------------
@@ -53,6 +52,8 @@ function resetGame(){
     palette.appendChild(r);
     r.style.position="static";
     r.style.zIndex="";
+    r.style.left="";
+    r.style.top="";
   });
   startTimer();
 }
@@ -85,6 +86,8 @@ function setupDragAndDrop(){
         zone.appendChild(dragged);
         dragged.style.position="static";
         dragged.style.zIndex="";
+        dragged.style.left="";
+        dragged.style.top="";
       }
     });
   });
@@ -92,22 +95,23 @@ function setupDragAndDrop(){
 
 // ------------------ Touch Drag (Mobile) ------------------
 function setupTouchDrag(el){
-  let offsetX, offsetY;
+  let offsetX = 0, offsetY = 0;
 
   el.addEventListener("touchstart", e=>{
     const touch = e.touches[0];
-    offsetX = touch.clientX - el.getBoundingClientRect().left;
-    offsetY = touch.clientY - el.getBoundingClientRect().top;
+    const rect = el.getBoundingClientRect();
+    offsetX = touch.clientX - rect.left;
+    offsetY = touch.clientY - rect.top;
     el.style.position = "absolute";
     el.style.zIndex = 1000;
-  });
+  }, { passive:true });
 
   el.addEventListener("touchmove", e=>{
+    e.preventDefault(); // ป้องกัน scroll/รีเฟรชบน iOS
     const touch = e.touches[0];
     el.style.left = (touch.clientX - offsetX) + "px";
     el.style.top  = (touch.clientY - offsetY) + "px";
 
-    // highlight dropzone ที่อยู่ใกล้
     document.querySelectorAll(".dropzone").forEach(zone=>{
       const rect = zone.getBoundingClientRect();
       if(touch.clientX > rect.left && touch.clientX < rect.right &&
@@ -117,7 +121,7 @@ function setupTouchDrag(el){
         zone.classList.remove("dragover");
       }
     });
-  });
+  }, { passive:false }); // ต้องใส่ passive:false เพื่อให้ preventDefault ทำงานบน iOS
 
   el.addEventListener("touchend", e=>{
     const touch = e.changedTouches[0];
@@ -132,6 +136,8 @@ function setupTouchDrag(el){
         zone.appendChild(el);
         el.style.position="static";
         el.style.zIndex="";
+        el.style.left="";
+        el.style.top="";
         dropped = true;
       }
     });
@@ -140,8 +146,10 @@ function setupTouchDrag(el){
       document.getElementById("rocks").appendChild(el);
       el.style.position="static";
       el.style.zIndex="";
+      el.style.left="";
+      el.style.top="";
     }
-  });
+  }, { passive:true });
 }
 
 // ------------------ ตรวจคำตอบ ------------------
@@ -198,47 +206,53 @@ function saveScore(){
   fetch(API_URL, {
     method: "POST",
     body: JSON.stringify(payload)
-  }).then(res => console.log("Score saved"));
+  }).then(res => console.log("Score saved")).catch(()=>{});
 }
 
 async function showLeaderboard(){
-  const res = await fetch(API_URL);
-  const scores = await res.json();
+  try{
+    const res = await fetch(API_URL);
+    const scores = await res.json();
 
-  scores.sort((a,b)=>a.time-b.time);
+    scores.sort((a,b)=>a.time-b.time);
 
-  const list=document.getElementById("leaderboardList");
-  list.innerHTML="";
-  scores.forEach((s, index)=>{
-    const totalSeconds = Math.floor(s.time / 100);
-    const minutes = String(Math.floor(totalSeconds / 60)).padStart(2,"0");
-    const seconds = String(totalSeconds % 60).padStart(2,"0");
-    const centis = String(s.time % 100).padStart(2,"0");
+    const list=document.getElementById("leaderboardList");
+    list.innerHTML="";
+    scores.forEach((s, index)=>{
+      const totalSeconds = Math.floor(s.time / 100);
+      const minutes = String(Math.floor(totalSeconds / 60)).padStart(2,"0");
+      const seconds = String(totalSeconds % 60).padStart(2,"0");
+      const centis = String(s.time % 100).padStart(2,"0");
 
-    const medal = index===0 ? "🥇" : index===1 ? "🥈" : index===2 ? "🥉" : `${index+1}.`;
-    const li=document.createElement("li");
-    li.textContent=`${medal} ${s.name} - ${minutes}.${seconds}.${centis}`;
-    list.appendChild(li);
-  });
+      const medal = index===0 ? "🥇" : index===1 ? "🥈" : index===2 ? "🥉" : `${index+1}.`;
+      const li=document.createElement("li");
+      li.textContent=`${medal} ${s.name} - ${minutes}.${seconds}.${centis}`;
+      list.appendChild(li);
+    });
 
-  document.getElementById("leaderboard").style.display="flex";
+    document.getElementById("leaderboard").style.display="flex";
+  } catch(err){
+    alert("ดึง Leaderboard ไม่ได้ กรุณาลองใหม่");
+  }
 }
 function closeLeaderboard(){ document.getElementById("leaderboard").style.display="none"; }
 
 // ------------------ Start ------------------
 document.addEventListener("DOMContentLoaded",()=>{
-  document.getElementById("startBtn").addEventListener("click",()=>{
-    playerName=document.getElementById("playerName").value.trim()||"ผู้เล่น";
-    document.getElementById("playerInput").style.display="none";
-    document.getElementById("gameArea").style.display="block";
-    document.getElementById("controls").style.display="flex";
-    setupDragAndDrop();
-    resetGame();
-  });
+  const startBtn = document.getElementById("startBtn");
+  if(startBtn){
+    startBtn.addEventListener("click",()=>{
+      playerName=document.getElementById("playerName").value.trim()||"ผู้เล่น";
+      document.getElementById("playerInput").style.display="none";
+      document.getElementById("gameArea").style.display="block";
+      document.getElementById("controls").style.display="flex";
+      setupDragAndDrop();
+      resetGame();
+    });
+  }
+
   document.getElementById("checkBtn").addEventListener("click",checkAnswers);
   document.getElementById("resetBtn").addEventListener("click",resetGame);
   document.getElementById("leaderboardBtn").addEventListener("click",showLeaderboard);
-   document.getElementById("leaderboardBtnHome").addEventListener("click",showLeaderboard);
+  document.getElementById("leaderboardBtnHome").addEventListener("click",showLeaderboard);
 });
-
-
