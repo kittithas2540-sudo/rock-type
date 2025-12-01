@@ -2,8 +2,8 @@
 const ANSWER_KEY = {
   "หินอัคนีแทรกซอน": ["หินแกรนิต", "หินแกบโบร"],
   "หินอัคนีพุ": ["หินบะซอลต์", "หินพัมมิซ"],
-  "หินตะกอนผสม": ["หินทราย", "หินดินดาน"],
-  "หินตะกอนประสาน": ["หินปูน"],
+  "หินตะกอนเนื้อผสม": ["หินทราย", "หินดินดาน"],
+  "หินตะกอนเนื้อประสาน": ["หินปูน"],
   "หินแปรสภาพแบบไพศาล": ["หินไนส์", "หินชีสต์"],
   "หินแปรสภาพแบบสัมผัส": ["หินอ่อน"]
 };
@@ -256,3 +256,4 @@ document.addEventListener("DOMContentLoaded",()=>{
   document.getElementById("leaderboardBtn").addEventListener("click",showLeaderboard);
   document.getElementById("leaderboardBtnHome").addEventListener("click",showLeaderboard);
 });
+
