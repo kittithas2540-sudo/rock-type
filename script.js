@@ -257,3 +257,4 @@ document.addEventListener("DOMContentLoaded",()=>{
   document.getElementById("leaderboardBtnHome").addEventListener("click",showLeaderboard);
 });
 
+
